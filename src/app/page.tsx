@@ -1,60 +1,56 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import ProductList, { Product } from "./Products/products"
+import Pagination from "./Pagination/pagination";
 
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  images: string[];
-  description: string;
-}
 
-export default function Home() {
+const Home: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | unknown>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://dummyjson.com/products?limit=10");
+        setIsLoading(true);
+        const skip = (currentPage - 1) * 10;
+        const response = await fetch(`https://dummyjson.com/products?limit=10&skip=${skip}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         const data = await response.json();
         setProducts(data.products);
-      } catch (error) {
-        // setError(error.message);
+      } catch (error: unknown) {
+        setError(error);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       {isLoading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p>Error: {error}</p>
+        <p>Error: {error as string}</p>
       ) : (
         <div>
           <h1 className="text-2xl font-bold mb-">Products</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {products.map((product: Product) => (
-              <div key={product.id} className="bg-white rounded-lg shadow-md p-4">
-                <img src={product.images[0]} alt={product.title} className="w-full h-auto mb-4" />
-                <div className="text-xl font-semibold">{product.title}</div>
-                <div className="text-gray-600">${product.price}</div>
-                <div className="text-gray-600">{product.description}</div>
-              </div>
-            ))}
-          </div>
+          <ProductList products={products} />
+          <Pagination currentPage={currentPage} onPageChange={handlePageChange} />
         </div>
       )}
     </main>
   );
-}
+};
+
+export default Home;
