@@ -3,14 +3,7 @@ import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './index.css';
 import { faAngleUp } from '@fortawesome/free-solid-svg-icons';
-
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  images: string[];
-  description: string;
-}
+import {Product} from "./type";
 
 const useInfiniteScroll = (callback: () => void) => {
   useEffect(() => {
@@ -67,7 +60,7 @@ const Home = () => {
       <nav className="navbar">
         <div className="logo">Infinite Scroll Products</div>
         <ul className="nav-links">
-          <li><a href="#">Home</a></li>
+          <li><a href="/">Home</a></li>
           <li><a href="/Pagination">Pagination</a></li>
           <li><a href="#">About</a></li>
           <li><a href="#">Contact</a></li>
@@ -87,7 +80,7 @@ const Home = () => {
               </div>
             ))}
           </div>
-          {/* {loading && <h4 className="loading">Loading...</h4>} */}
+          {loading && <h4 className="loading">Loading...</h4>}
         </main>
 
         <button className="scroll-to-top" onClick={scrollToTop}>
