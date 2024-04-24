@@ -1,45 +1,53 @@
-'use client'
+ 'use client'
 
-import { useEffect, useState } from 'react';
+ import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './index.css';
 import { faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import { fetchProducts } from './api'; // Import the fetchProducts function
+import { fetchProducts } from './api';
 import { Product } from './type';
-
-const useInfiniteScroll = (callback: () => void) => {
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight
-      ) {
-        callback();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [callback]);
-};
 
 const Home = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [skip, setSkip] = useState(0);
   const limit = 10;
+  const [reachedMaxProducts, setReachedMaxProducts] = useState(false)
+
 
   const fetchProductsAndUpdateState = async () => {
     setLoading(true);
     try {
-      const data = await fetchProducts(skip, limit); // Use the fetchProducts function
-      setProducts((prevProducts) => [...prevProducts, ...data]);
+      const productsArray = await fetchProducts(skip, limit);
+      const {products} = productsArray
+      if (skip >= productsArray.total) {
+        setReachedMaxProducts(true);
+        return;
+      }
+      setProducts((prevProducts) => [...prevProducts, ...products]);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
-    }
-  };
+    }};
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        !loading &&
+        !reachedMaxProducts &&
+        window.innerHeight + document.documentElement.scrollTop + 1 >
+        document.documentElement.offsetHeight
+      ) {
+        setLoading(true);
+        loadMore();
+      }
+    };
+  
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll); 
+  }, [loading, reachedMaxProducts]); 
+  
 
   const loadMore = () => {
     setSkip((prevSkip) => prevSkip + limit);
@@ -48,15 +56,13 @@ const Home = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: 'smooth',
     });
   };
 
-  useInfiniteScroll(loadMore);
-
   useEffect(() => {
     fetchProductsAndUpdateState();
-  }, [skip]); // Only fetch products when skip changes
+  }, [skip]); 
 
   return (
     <div>
@@ -64,11 +70,15 @@ const Home = () => {
       <nav className="navbar bg-gray-800">
         <div className="logo">Infinite Scroll Products</div>
         <ul className="nav-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/Pagination">Pagination</a></li>
+          <li>
+            <a href="/">Home</a>
+          </li>
+          <li>
+            <a href="/Pagination">Pagination</a>
+          </li>
         </ul>
       </nav>
-      <br/>
+      <br />
 
       <div className="container">
         <main>
@@ -77,7 +87,9 @@ const Home = () => {
               <div key={product.id} className="bg-white rounded-lg shadow-md p-4">
                 <img src={product.images[0]} alt={product.title} className="w-full h-auto mb-4" />
                 <div className="text-xl font-semibold">{product.title}</div>
-                <div className="text-gray-600"><span className="text-l font-bold">Price:</span> ${product.price}</div>
+                <div className="text-gray-600">
+                  <span className="text-l font-bold">Price:</span> ${product.price}
+                </div>
                 <div className="text-gray-600">{product.description}</div>
               </div>
             ))}
@@ -86,7 +98,7 @@ const Home = () => {
         </main>
 
         <button className="scroll-to-top" onClick={scrollToTop}>
-          <FontAwesomeIcon icon={faAngleUp} /> {/* Use the imported icon directly */}
+          <FontAwesomeIcon icon={faAngleUp} />
         </button>
       </div>
     </div>
@@ -94,3 +106,4 @@ const Home = () => {
 };
 
 export default Home;
+
