@@ -1,9 +1,11 @@
 'use client'
+
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './index.css';
 import { faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import {Product} from "./type";
+import { fetchProducts } from './api'; // Import the fetchProducts function
+import { Product } from './type';
 
 const useInfiniteScroll = (callback: () => void) => {
   useEffect(() => {
@@ -26,14 +28,17 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [skip, setSkip] = useState(0);
   const limit = 10;
-  const apiUrl = `https://dummyjson.com/products`;
 
-  const fetchProducts = async () => {
+  const fetchProductsAndUpdateState = async () => {
     setLoading(true);
-    const response = await fetch(`${apiUrl}?limit=${limit}&skip=${skip}`);
-    const data = await response.json();
-    setProducts((prevProducts) => [...prevProducts, ...data?.products]);
-    setLoading(false);
+    try {
+      const data = await fetchProducts(skip, limit); // Use the fetchProducts function
+      setProducts((prevProducts) => [...prevProducts, ...data]);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadMore = () => {
@@ -50,20 +55,17 @@ const Home = () => {
   useInfiniteScroll(loadMore);
 
   useEffect(() => {
-    fetchProducts();
+    fetchProductsAndUpdateState();
   }, [skip]); // Only fetch products when skip changes
 
   return (
     <div>
-
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className="navbar bg-gray-800">
         <div className="logo">Infinite Scroll Products</div>
         <ul className="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/Pagination">Pagination</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
         </ul>
       </nav>
       <br/>
