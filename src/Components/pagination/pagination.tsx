@@ -11,7 +11,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
   const getPageNumbers = (): number[] => {
     const pagesToShow = 3; // Number of pages to show directly
     const pageNumbers: number[] = [];
-    
+
     // If there are fewer total pages than the number of pages to show directly,
     // display all pages
     if (totalPages <= pagesToShow) {
@@ -42,9 +42,20 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
   };
 
   return (
-    <div className="flex justify-center mt-4">
+    <div className="flex justify-center mt-4" >
       {currentPage > 1 && (
-        <button onClick={() => onPageChange(currentPage - 1)} className="mx-2 px-4 py-2 bg-gray-700 text-white rounded-md">
+        <button onClick={() => onPageChange(currentPage - 1)} style={
+          {
+            marginLeft: "0.5rem",
+            marginRight: "0.5rem",
+            paddingLeft: "1rem",
+            paddingRight: "1rem",
+            paddingTop: "0.5rem",
+            paddingBottom: "0.5rem",
+            backgroundColor: "#2d3748",
+            color: "white",
+            borderRadius: "0.375rem"
+          }}>
           Prev
         </button>
       )}
@@ -52,13 +63,36 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`mx-2 px-4 py-2 bg-gray-700 text-white rounded-md ${currentPage === page ? 'bg-gray-700' : ''}`}
+          style={
+            {
+              marginLeft: "0.5rem",
+              marginRight: "0.5rem",
+              paddingLeft: "1rem",
+              paddingRight: "1rem",
+              paddingTop: "0.5rem",
+              paddingBottom: "0.5rem",
+              backgroundColor: "#2d3748",
+              color: "white",
+              borderRadius: "0.375rem"
+            }}
         >
           {page}
         </button>
       ))}
       {currentPage < totalPages && (
-        <button onClick={() => onPageChange(currentPage + 1)} className="mx-2 px-4 py-2 bg-gray-700 text-white rounded-md">
+        <button onClick={() => onPageChange(currentPage + 1)}
+          style={
+            {
+              marginLeft: "0.5rem",
+              marginRight: "0.5rem",
+              paddingLeft: "1rem",
+              paddingRight: "1rem",
+              paddingTop: "0.5rem",
+              paddingBottom: "0.5rem",
+              backgroundColor: "#2d3748",
+              color: "white",
+              borderRadius: "0.375rem"
+            }}>
           Next
         </button>
       )}
