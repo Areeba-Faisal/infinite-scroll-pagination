@@ -7,13 +7,10 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-  // Function to generate an array of page numbers to display
   const getPageNumbers = (): number[] => {
-    const pagesToShow = 3; // Number of pages to show directly
+    const pagesToShow = 3; 
     const pageNumbers: number[] = [];
 
-    // If there are fewer total pages than the number of pages to show directly,
-    // display all pages
     if (totalPages <= pagesToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
@@ -25,13 +22,11 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
           pageNumbers.push(i);
         }
       } else {
-        // If current page is within the last pagesToShow pages
         if (currentPage + (pagesToShow - 1) >= totalPages) {
           for (let i = totalPages - (pagesToShow - 1); i <= totalPages; i++) {
             pageNumbers.push(i);
           }
         } else {
-          // Otherwise, display the current page and the next two pages
           for (let i = currentPage; i <= currentPage + (pagesToShow - 1); i++) {
             pageNumbers.push(i);
           }
@@ -42,7 +37,11 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
   };
 
   return (
-    <div className="flex justify-center mt-4" >
+    <div  style={{
+      display:"flex",
+      justifyContent:"center",
+      marginTop:"1rem",
+    }} >
       {currentPage > 1 && (
         <button onClick={() => onPageChange(currentPage - 1)} style={
           {
